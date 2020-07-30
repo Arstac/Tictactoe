@@ -112,7 +112,6 @@ def winner(board):
 
     If there is no winner function should return None
     """
-    win_player = EMPTY
     #un altre metode per comprovar tres en rlla horitzontal, pero agafo l'altre aixi horitzontla i vertical son el mateix
     # for i in board:
     #     check = i[0]
@@ -122,6 +121,9 @@ def winner(board):
     #             print j
     #         else return None
     #comprovo si hi ha 3 en ralla HORITZONTAL
+    win_player = EMPTY
+
+
     for i in range(0,2):
         if board[i][0] == board[i][1]:
             if board[i][0] == board[i][2]:
@@ -176,8 +178,17 @@ def terminal(board):
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
+
+    utility will only be called on a board if terminal(board) is true.
     """
-    raise NotImplementedError
+    #comprovo si el joc ha acabat
+    if terminal(board):
+        if winner(board) == X:
+            return 1
+        elif winner(board) == O:
+            return -1
+        else return 0
+    else raise Exception ("el joc no ha acabat")
 
 
 def minimax(board):
