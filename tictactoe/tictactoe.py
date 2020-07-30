@@ -4,6 +4,7 @@ Tic Tac Toe Player
 
 import math
 import copy
+from util import Node, StackFrontier, QueueFrontier
 
 X = "X"
 O = "O"
@@ -36,9 +37,9 @@ def player(board):
     counter = 0
 
     for i in board:
-    for j in i:
-        if j is None:
-            counter += 1
+        for j in i:
+            if j is None:
+                counter += 1
     #si el numero no te residu (es parell), i no es igual a 0 (que significa que no hi han moviments):
     if (counter%2 == 0 and counter != 0):
         return O
@@ -112,15 +113,7 @@ def winner(board):
 
     If there is no winner function should return None
     """
-    #un altre metode per comprovar tres en rlla horitzontal, pero agafo l'altre aixi horitzontla i vertical son el mateix
-    # for i in board:
-    #     check = i[0]
-    #     for j in i:
-    #         if j == check:
-    #             print ("Same as before, keep going")
-    #             print j
-    #         else return None
-    #comprovo si hi ha 3 en ralla HORITZONTAL
+
     win_player = EMPTY
 
 
@@ -170,9 +163,10 @@ def terminal(board):
     It will return True if there aren't moves to do in the board or if someone has win
     """
     #If there are no moves:
-    if player(board) == None or winner(board) == X or winner(board) == O
+    if player(board) == None or winner(board) == X or winner(board) == O:
         return True
-    else False
+    else:
+        return False
 
 
 def utility(board):
@@ -182,17 +176,66 @@ def utility(board):
     utility will only be called on a board if terminal(board) is true.
     """
     #comprovo si el joc ha acabat
-    if terminal(board):
-        if winner(board) == X:
-            return 1
-        elif winner(board) == O:
-            return -1
-        else return 0
-    else raise Exception ("el joc no ha acabat")
-
+    if winner(board) == X:
+        return 1
+    elif winner(board) == O:
+        return -1
+    else:
+        return 0
+#only call utility if terminal(board) is true
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    raise NotImplementedError
+
+    start = Node(state=board, parent=None, action=None)
+    frontier=QueueFrontier()
+    frontier.add(start)
+    explored = []
+
+    #First, look at if board is terminal, and if not Loop until it has a solution
+    if terminal(board):
+        return None
+    else:
+        while True:
+
+            if frontier.empty():
+                raise Exception ("No solution found")
+
+            #choose a node from the frontier
+            node = frontier.remove()
+
+            #if the node is a goal, then we have the solution
+            #if user player is X, wants to max, and wants to MAX utility
+            #si el node es un estat terminal:
+            if terminal(node.state):
+                utilities = []
+                actions = []
+                print ("trobo solucio")
+                while node.parent is not None:
+                    utilities.append(utility(node.state))
+                    actions.append(node.action)
+                    node = node.parent
+                actions.reverse()
+                utilities.reverse()
+                if player(node.state) == X:
+                    return actions[utilities.index(max(utilities))]
+                if player(node.state) == O:
+                    return actions[utilities.index(min(utilities))]
+
+
+            #mark the node as explored
+            explored.append(node.state)
+
+            #add neighbours to the frontier
+            for action, state in neighbors(node.state):
+                if state not in explored:
+                    child = Node(state=state, parent=node, action=action)
+                    frontier.add(child)
+
+def neighbors(board):
+    neighbors = []
+    for action in actions(board):
+        neighbors.append((action, result(board, action)))
+    return neighbors
