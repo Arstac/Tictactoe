@@ -117,42 +117,16 @@ def winner(board):
     win_player = EMPTY
 
 
-    for i in range(0,2):
-        if board[i][0] == board[i][1]:
-            if board[i][0] == board[i][2]:
-                win_player = board[i][0]
-                print(f"tres en ralla horitzonal de {win_player}")
-                return win_player       
-        else:
-            win_player = EMPTY
+    if three_in_row(board) != None:
+        return three_in_row(board)
 
+    elif three_in_col(board) != None:
+        return three_in_col(board)
 
-    #comprovo si hi ha 3 en ralla VERTICAUl (ve a ser el mateix que horitzonal tot ique primer miro les j)
-    for i in range(0,2):
-        if board[0][i] == board[1][i]:
-            if board[0][i] == board[2][i]:
-                win_player = board[0][i]
-                print(f"tres en ralla vertical de {win_player}")
-                
-                return win_player
-        else:
-            win_player = EMPTY
+    elif three_in_diag(board) != None:
+        return three_in_diag(board)
 
-
-    #comprovo si hi ha 3 en ralla DIAGONAL
-    if board[0][0] == board[1][1] and  board[0][0] == board[2][2]:
-        win_player = board[0][0]
-        print (f"Tres en ralla diagonal <- de {win_player}")
-        return win_player
-    elif board[0][2] == board[1][1] and  board[0][2] == board[2][0]:
-        win_player = board[0][2]
-        print (f"Tres en ralla diagonal -> de {win_player}")
-        return win_player
     else:
-        win_player = EMPTY
-
-    if win_player == None:
-        print ("Nobody wins")
         return None
 
 
@@ -188,21 +162,31 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+    print("minmax")
     if terminal(board):
         return None
+    #en cas que comenci la maquina, que coloqui la X al mig.
     elif board == initial_state() and player(board) == X:
+        print("tir x inicial")
         return (1,1)
     else:
         points = []
         possible_moves = actions(board)
         if player(board) == X:
+            print("player X")
             for action in actions(board):
-                points.append(max_value(result(board,action)))
+                print("action")
+                print (action)
+                print ("value:")
+                print(min_value(result(board,action)))
+                points.append(min_value(result(board,action)))
+            print (possible_moves[points.index(max(points))])
             return possible_moves[points.index(max(points))]
 
         if player(board) == O:
+            print ("player O")
             for action in actions(board):
-                points.append(min_value(result(board,action)))
+                points.append(max_value(result(board,action)))
             return possible_moves[points.index(min(points))]
         #given a state (s) in this case, board:
         #MAX picks and action a in actions(s) that produces MAX value of min_value(result(s,a))
@@ -224,3 +208,26 @@ def min_value(board):
     for action in actions(board):
         v=min(v, max_value(result(board, action)))
     return v
+
+def three_in_row(board):
+    for row in board:
+        if row[0] == row[1] and row[0] == row[2]:
+            return row[0]
+    return None
+
+
+def three_in_col(board):
+    for i in range(3):
+        if board[0][i] == board[1][i] and board[0][i] == board[2][i]:
+            return board[0][i]
+    return None
+
+
+
+def three_in_diag(board):
+    if board[0][0] == board[1][1] and  board[0][0] == board[2][2]:
+        return board[0][0]
+    elif board[0][2] == board[1][1] and  board[0][2] == board[2][0]:
+        return board[0][2]
+    else:
+        return None
