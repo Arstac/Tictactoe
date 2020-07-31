@@ -188,24 +188,38 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+        
 		if terminal(board):
 			return None
 		else:
-			
+            v = []
+            possible_moves = actions(board)
+            if player(board) == X:
+                for action in actions(board):
+                    v.append(max(v, min_value(result(board,action))))
+                return possible_moves[v.index(max(v))]
+
+            if player(board) == O:
+                for action in actions(board):
+                    v.append(min(v, max_value(result(board,action))))
+                return possible_moves[v.index(min(v))]
+            #given a state (s) in this case, board:
+            #MAX picks and action a in actions(s) that produces MAX value of min_value(result(s,a))
+			#MIN picks and action a in actions(s) that produces MIN value of max_value(result(s,a))
 
     
 def max_value(board):
-	if terminal(board):
-		return utility(board)
-	v=-999999999
-	for action in actions(board):
-		v=max(v, min_value(result(board, action)))
-	return v
+    if terminal(board):
+        return utility(board)
+    v=-999999999
+    for action in actions(board):
+        v=max(v, min_value(result(board, action)))
+    return v
 	
 def min_value(board):
-	if terminal(board):
-		return utility(board)
-	v=999999999
-	for action in actions(board):
-		v=min(v, max_value(result(board, action)))
-	return v
+    if terminal(board):
+        return utility(board)
+    v=999999999
+    for action in actions(board):
+        v=min(v, max_value(result(board, action)))
+    return v
