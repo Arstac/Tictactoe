@@ -188,54 +188,24 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+		if terminal(board):
+			return None
+		else:
+			
 
-    start = Node(state=board, parent=None, action=None)
-    frontier=QueueFrontier()
-    frontier.add(start)
-    explored = []
-
-    #First, look at if board is terminal, and if not Loop until it has a solution
-    if terminal(board):
-        return None
-    else:
-        while True:
-
-            if frontier.empty():
-                raise Exception ("No solution found")
-
-            #choose a node from the frontier
-            node = frontier.remove()
-
-            #if the node is a goal, then we have the solution
-            #if user player is X, wants to max, and wants to MAX utility
-            #si el node es un estat terminal:
-            if terminal(node.state):
-                utilities = []
-                actions = []
-                print ("trobo solucio")
-                while node.parent is not None:
-                    utilities.append(utility(node.state))
-                    actions.append(node.action)
-                    node = node.parent
-                actions.reverse()
-                utilities.reverse()
-                if player(node.state) == X:
-                    return actions[utilities.index(max(utilities))]
-                if player(node.state) == O:
-                    return actions[utilities.index(min(utilities))]
-
-
-            #mark the node as explored
-            explored.append(node.state)
-
-            #add neighbours to the frontier
-            for action, state in neighbors(node.state):
-                if state not in explored:
-                    child = Node(state=state, parent=node, action=action)
-                    frontier.add(child)
-
-def neighbors(board):
-    neighbors = []
-    for action in actions(board):
-        neighbors.append((action, result(board, action)))
-    return neighbors
+    
+def max_value(board):
+	if terminal(board):
+		return utility(board)
+	v=-999999999
+	for action in actions(board):
+		v=max(v, min_value(result(board, action)))
+	return v
+	
+def min_value(board):
+	if terminal(board):
+		return utility(board)
+	v=999999999
+	for action in actions(board):
+		v=min(v, max_value(result(board, action)))
+	return v
